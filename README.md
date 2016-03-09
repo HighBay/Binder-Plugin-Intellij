@@ -26,7 +26,7 @@ adds url to the Webservice class.
 
 #Warning Redownloading will overwrite any changes you have made to the binder files.
 
-
+#### This is a proof of concept and has been throughly tested but still may have its quirks.
 #License
 
 Copyright (c) 2016 The Board of Trustees of The University of Alabama All rights reserved.

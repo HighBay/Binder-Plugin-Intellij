@@ -24,7 +24,7 @@ extras.
 adds all imports to all of the files.
 adds url to the Webservice class.
 
-#Warning this will overwrite any changes you have made to the binder files if redownloaded.
+#Warning Redownloading will overwrite any changes you have made to the binder files.
 
 
 #License

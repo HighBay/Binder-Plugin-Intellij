@@ -1,6 +1,8 @@
 package BinderPackage.code;
 
+import BinderPackage.code.utils.ConsolePrintUtils;
 import BinderPackage.code.utils.FileUtils;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -15,6 +17,7 @@ import java.util.List;
  */
 public class BinderFileManipulation {
 
+    //Built because I didn't know how to do it when this was made.
     public static void addTextDependenciesForBinderToGradleFile(String gradlePath) throws IOException {
         //find gradle file in project.
         File gradlefile = new File(gradlePath);
@@ -57,7 +60,7 @@ public class BinderFileManipulation {
             }
         }
         List<String> allCurrentDependencies = lines.subList(start, end);
-        System.out.print("Start " + start + "End " + end);
+        ConsolePrintUtils.printToConsole("Start " + start + "End " + end,"IMPORTS");
         return allCurrentDependencies;
     }
 
@@ -205,7 +208,10 @@ public class BinderFileManipulation {
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
             if (line.contains("<#WebServiceAddress#>")) {
-                line = line.replace("<#WebServiceAddress#>", "\"" + url + "\";");
+                String find = "<#WebServiceAddress#>";
+                String replace = "\"" + url + "\";";
+
+                line = line.replace(find,replace );
                 //remove previous
                 lines.remove(i);
                 //add new
@@ -262,7 +268,7 @@ public class BinderFileManipulation {
     }
 
     //add import line.
-    private static String addImportLine(String packageName, String fileName) {
+       private static String addImportLine(String packageName, String fileName) {
         return "import " + packageName + ".Binder.Data.Dtos." + fileName + ";";
     }
 
@@ -292,7 +298,7 @@ public class BinderFileManipulation {
         //add package line at the beginning of the file.
         lines.add(0, "package " + packagePath + ";\n");
         FileUtils.writeFileForLinesList(lines, file);
-        System.out.println("Package Addition Done");
+        ConsolePrintUtils.printToConsole("Package Addition Done","PACKAGE WRITE");
     }
 
 

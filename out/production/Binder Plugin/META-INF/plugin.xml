@@ -1,38 +1,40 @@
 <idea-plugin version="2">
-  <id>com.your.company.unique.plugin.id</id>
-  <name>Plugin display name here</name>
-  <version>1.0</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <id>edu.ua.highbay.binderplugin</id>
+    <name>Binder Plugin</name>
+    <version>0.5.2</version>
+    <vendor email="highbay@ua.edu" url="http://highbay.github.io/">High Bay</vendor>
 
-  <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
+    <description><![CDATA[
+      This is a plugin for Android Studio and IntelliJ that connects to the Binder Library built at the High Bay. This plugin makes Binder even easier to use!.<br>
+      <em></em>
     ]]></description>
 
-  <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
+    <change-notes><![CDATA[
+      Initial Build.<br>
+      <em>-Fixed the Get pack name error</em>
+      <em>-Add Internet uses-permissions to manifest</em>
     ]]>
-  </change-notes>
+    </change-notes>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="141.0"/>
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="141.0"/>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-       on how to target different products -->
-  <!-- uncomment to enable plugin in all products
-  <depends>com.intellij.modules.lang</depends>
-  -->
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products
+    <depends>com.intellij.modules.lang</depends>
+    -->
 
-  <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
-  </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
 
-  <actions>
-    <group id="BinderPlugin.Menu" text="Binder" description="Binder">
-      <add-to-group group-id="MainMenu" anchor="last"  />
-      <action id="BinderPlugin.BinderDownload" class="BinderPackage.code.BinderBoxes" text="_Download Binder" description="Go and Download Binder" />
-    </group>
-  </actions>
+    <actions>
+        <group id="BinderPlugin.Menu" text="Binder" description="Binder">
+            <add-to-group group-id="MainMenu" anchor="last"/>
+            <action id="BinderPlugin.BinderDownload" class="BinderPackage.code.BinderBoxes" text="_Download Binder"
+                    description="Go and Download Binder"/>
+        </group>
+    </actions>
 
 </idea-plugin>

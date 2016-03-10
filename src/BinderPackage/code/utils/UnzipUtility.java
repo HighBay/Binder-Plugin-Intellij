@@ -41,22 +41,22 @@ public class UnzipUtility {
         File destLibDir = new File(destDir + File.separator + "Libraries");
         if (!destDir.exists()) {
             //Making Binder Folder
-            System.out.println("dir name " + destDir);
+            ConsolePrintUtils.printToConsole(destDir.toString(),"DIR NAME");
             destDir.mkdir();
         }
         if (!destDataDir.exists()) {
-            //Making Binder Folder
-            System.out.println("dir name " + destDataDir);
+            //Making Binder Data Folder
+            ConsolePrintUtils.printToConsole(destDataDir.toString(),"DIR NAME");
             destDataDir.mkdir();
         }
         if (!destDtoDir.exists()) {
-            //Making Binder Folder
-            System.out.println("dir name " + destDtoDir);
+            //Making Binder Dto Folder
+            ConsolePrintUtils.printToConsole(destDtoDir.toString(),"DIR NAME");
             destDtoDir.mkdir();
         }
         if (!destLibDir.exists()) {
-            //Making Binder Folder
-            System.out.println("dir name " + destLibDir);
+            //Making Binder Libs Folder
+            ConsolePrintUtils.printToConsole(destLibDir.toString(),"DIR NAME");
             destLibDir.mkdir();
         }
         // a list of all of the files in the zip.
@@ -69,20 +69,19 @@ public class UnzipUtility {
         // iterates over entries in the zip file
         while (entry != null) {
             String entryName = entry.getName();
-            System.out.println(entryName);
+            ConsolePrintUtils.printToConsole(entryName,"ENTRY NAME");
 
             String filePath = destDirectory + File.separator + entryName;
 
             if (!entry.isDirectory()) {
                 // if the entry is a file, extracts it
-                System.out.println("created file " + filePath);
-
+                ConsolePrintUtils.printToConsole(filePath,"CREATED FILE");
                 extractFile(zipIn, filePath);
                 BinderFileManipulation.addImports(filePath,mPackageName, entries);
             } else {
                 // if the entry is a directory, make the directory
                 File dir = new File(filePath);
-                System.out.println("created dir  " + dir);
+                ConsolePrintUtils.printToConsole(dir.toString(),"CREATED DIR");
                 dir.mkdir();
             }
             zipIn.closeEntry();

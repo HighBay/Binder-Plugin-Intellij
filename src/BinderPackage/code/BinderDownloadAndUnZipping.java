@@ -16,6 +16,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.List;
 public class BinderDownloadAndUnZipping {
 
     String AndroidApi = "api/Binder/distribution?platform=android";
+
     private URL mBaseUrl, mUrl;
     private Project mProject;
 
@@ -55,13 +57,13 @@ public class BinderDownloadAndUnZipping {
         String chooserPath = "";
         try {
             chooserPath = getChooserPath();
-            System.out.print(chooserPath + "\n");
-
         } catch (IOException e) {
             System.out.print("Chooser path did not work IO Exception");
+        } catch (AssertionError e2) {
+            System.out.print("Chooser path did not work AssertionError");
         }
         chooserPath = mProject.getBasePath() + chooserPath;
-        System.out.print("FULL PATH ***************************************************************" + chooserPath + "\n");
+        ConsolePrintUtils.printToConsole(chooserPath, "FULL PATH");
         JFileChooser chooser = new JFileChooser(chooserPath);
 
         // Set the tool tip
@@ -96,6 +98,9 @@ public class BinderDownloadAndUnZipping {
                     //Create Application File
                     AddApplicationFile();
                 }
+                //Add internet permission to the manifest.
+                addInternetUsesPermission();
+
             }
         }
 
@@ -107,7 +112,7 @@ public class BinderDownloadAndUnZipping {
         File manifest = FileUtils.getAndroidManifestFileForApp(mProject);
         java.util.List<String> lines = Files.readAllLines(manifest.toPath(), Charset.defaultCharset());
         ArrayList<String> applicationTag = BinderFileManipulation.getLinesWithStartAndEndLine(lines, "<application", ">");
-        ConsolePrintUtils.printListIntoConsole(applicationTag, "APPTAG*************************************************");
+        ConsolePrintUtils.printListIntoConsole(applicationTag, "APP TAG");
         //add text to manifest
         int Start = -1;
         for (int i = 0; i < lines.size(); i++) {
@@ -126,7 +131,7 @@ public class BinderDownloadAndUnZipping {
         File manifest = FileUtils.getAndroidManifestFileForApp(mProject);
         java.util.List<String> lines = Files.readAllLines(manifest.toPath(), Charset.defaultCharset());
         ArrayList<String> applicationTag = BinderFileManipulation.getLinesWithStartAndEndLine(lines, "<application", ">");
-        ConsolePrintUtils.printListIntoConsole(applicationTag, "APPTAG*************************************************");
+        ConsolePrintUtils.printListIntoConsole(applicationTag, "APPTAG");
         String appName = null;
         for (String tagString : applicationTag) {
             if (tagString.contains("android:name=")) {
@@ -142,7 +147,7 @@ public class BinderDownloadAndUnZipping {
         File manifest = FileUtils.getAndroidManifestFileForApp(mProject);
         java.util.List<String> lines = Files.readAllLines(manifest.toPath(), Charset.defaultCharset());
         ArrayList<String> applicationTag = BinderFileManipulation.getLinesWithStartAndEndLine(lines, "<application", ">");
-        ConsolePrintUtils.printListIntoConsole(applicationTag, "APPTAG*************************************************");
+        ConsolePrintUtils.printListIntoConsole(applicationTag, "APPTAG");
         boolean hasAppFile = false;
         String appName = null;
         for (String tagString : applicationTag) {
@@ -164,7 +169,14 @@ public class BinderDownloadAndUnZipping {
 
     private void addApplicationFileToProject(String AppName) throws IOException {
         //TODO CREATE FILE and add it to the project.
-        File newAppFile = new File(mProject.getBasePath() + File.separator + getChooserPath(), AppName + ".java");
+        String chooserPath = "";
+        try {
+            chooserPath = File.separator + getChooserPath();
+        } catch (AssertionError e) {
+
+        }
+
+        File newAppFile = new File(mProject.getBasePath() + chooserPath, AppName + ".java");
         if (newAppFile.toPath().toFile().createNewFile()) {
             ArrayList<String> lines = new ArrayList<>();
             lines.add(0, "package " + getPackageName() + ";\n");
@@ -184,8 +196,7 @@ public class BinderDownloadAndUnZipping {
         }
     }
 
-    private String addApplicationNameToManifest(File manifest, int Start, ArrayList<
-            String> applicationTag, List<String> lines) throws IOException {
+    private String addApplicationNameToManifest(File manifest, int Start, ArrayList<String> applicationTag, List<String> lines) throws IOException {
         ConsolePrintUtils.printToConsole("No Application File!! Creating a file for user.", "APP");
         //Show dialog to Put in ApplicationName
         String txt = Messages.showInputDialog(mProject, "No application file detected please give us a name for your application file.", "Enter Application File Name.", Messages.getQuestionIcon());
@@ -205,7 +216,7 @@ public class BinderDownloadAndUnZipping {
         }
         //write over file in manifest.
         FileUtils.writeFileForLinesList(lines, manifest);
-        ConsolePrintUtils.printListIntoConsole(lines, "New MANIFEST");
+        ConsolePrintUtils.printListIntoConsole(lines, "NEW MANIFEST");
         return txt;
     }
 
@@ -231,18 +242,37 @@ public class BinderDownloadAndUnZipping {
     private String getPackageName() throws IOException {
         String packageName = null;
         File manifest = FileUtils.getAndroidManifestFileForApp(mProject);
-        try (BufferedReader br = new BufferedReader(new FileReader(manifest))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                // process the line.
-                String theLineIWant = "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\" package=\"";
-                if (line.contains(theLineIWant)) {
-                    packageName = line.substring(theLineIWant.length()).split("\"")[0];
-//                      System.out.print("WHAT I WANT ***********************************" + packageName + "\n\n\n\n");
-                }
+        byte[] encoded = Files.readAllBytes(Paths.get(manifest.getPath()));
+        String manifestString = new String(encoded, Charset.defaultCharset());
+        String thePackageToken = "package=\"";
+        String theEndOfWant = "\"";
+        String[] strings = manifestString.split(thePackageToken);
+        String backEnd = strings[strings.length - 1];
+        String[] moreStrings = backEnd.split(theEndOfWant);
+        packageName = moreStrings[0];
+        return packageName;
+    }
+
+
+    private void addInternetUsesPermission() throws IOException {
+        String internetPermission = "<uses-permission android:name=\"android.permission.INTERNET\"/>";
+        File manifest = FileUtils.getAndroidManifestFileForApp(mProject);
+        List<String> maniFestLines = Files.readAllLines(manifest.toPath(), Charset.defaultCharset());
+        boolean alreadyHasInternetPermission = false;
+        for (String line : maniFestLines) {
+            if (line.contains(internetPermission)) {
+                alreadyHasInternetPermission = true;
+                break;
             }
         }
-        return packageName;
+        //Add the internet permission if its not there.
+        if (!alreadyHasInternetPermission) {
+            maniFestLines.add(maniFestLines.size()-1, internetPermission);
+            ConsolePrintUtils.printToConsole("Adding Internet Permission", "PERMISSIONS");
+            FileUtils.writeFileForLinesList(maniFestLines, manifest);
+        } else {
+            ConsolePrintUtils.printToConsole("Internet Permission Already there.", "PERMISSIONS");
+        }
     }
 
     public boolean hasApplicationFile() {
